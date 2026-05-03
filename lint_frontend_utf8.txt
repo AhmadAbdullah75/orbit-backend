@@ -1,0 +1,33 @@
+﻿
+> project-manager-frontend@0.0.0 lint
+> eslint .
+
+
+C:\Users\alfat\saas-project-manager\project-manager-frontend\src\context\ThemeContext.jsx
+  31:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\alfat\saas-project-manager\project-manager-frontend\src\layouts\DashboardLayout.jsx
+  16:28  error    'orgName' is assigned a value but never used                                                                                                                 no-unused-vars
+  61:6   warning  React Hook useEffect has missing dependencies: 'activeOrgId', 'dispatch', and 'user?.organization?._id'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\alfat\saas-project-manager\project-manager-frontend\src\pages\DashboardPage.jsx
+  11:11  error    'isDark' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                         no-unused-vars
+  23:10  error    'orgName' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                        no-unused-vars
+  85:6   warning  React Hook useEffect has a missing dependency: 'fetchStats'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\alfat\saas-project-manager\project-manager-frontend\src\pages\GoogleAuthSuccessPage.jsx
+  30:22  error  'err' is defined but never used  no-unused-vars
+
+C:\Users\alfat\saas-project-manager\project-manager-frontend\src\pages\MembersPage.jsx
+  16:10  error    'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                            no-unused-vars
+  30:6   warning  React Hook useEffect has a missing dependency: 'fetchMembers'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\alfat\saas-project-manager\project-manager-frontend\src\pages\ProjectsPage.jsx
+  10:11  error    'isDark' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                            no-unused-vars
+  36:6   warning  React Hook useEffect has a missing dependency: 'fetchProjects'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\alfat\saas-project-manager\project-manager-frontend\src\pages\SettingsPage.jsx
+  1:20  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+Γ£û 12 problems (8 errors, 4 warnings)
+
