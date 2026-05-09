@@ -34,39 +34,52 @@ export const refreshToken = catchAsync(async (req, res, next) => {
 
 export const forgotPassword = catchAsync(async (req, res, next) => {
   const { email } = req.body;
-  
   const user = await User.findOne({ email });
+
   if (!user) {
-    return next(new AppError('No user found with that email', 404));
+    return res.status(200).json({
+      status: 'success',
+      message: 'If this email exists, a reset link was sent.',
+    });
   }
 
-  // Generate token
+  // Generate reset token
   const resetToken = crypto.randomBytes(32).toString('hex');
   const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
   user.resetPasswordToken = hashedToken;
-  user.resetPasswordExpiry = Date.now() + 30 * 60 * 1000; // 30 minutes per prompt
+  user.resetPasswordExpiry = Date.now() + 30 * 60 * 1000; // 30 minutes
   await user.save({ validateBeforeSave: false });
 
-  const resetUrl =
-    `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`
+  const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
 
-  // Send real email
-  const emailSent = await sendPasswordResetEmail({
-    toEmail: user.email,
-    userName: user.name,
-    resetUrl,
-  })
+  // Try sending email
+  let emailSent = false;
+  try {
+    await sendPasswordResetEmail({
+      toEmail: user.email,
+      userName: user.name,
+      resetUrl,
+    });
+    emailSent = true;
+  } catch (err) {
+    console.log('[DEV] Email failed:', err.message);
+  }
 
-  // Always log as fallback in dev
-  console.log(`[DEV] Reset URL: ${resetUrl}`)
+  // Always log to console as backup
+  console.log('\n[RESET URL]:', resetUrl, '\n');
 
-  res.status(200).json({
+  // If email sent -> normal message
+  // If email failed -> return reset link directly in response
+  return res.status(200).json({
     status: 'success',
+    emailSent,
     message: emailSent
-      ? `Password reset link sent to ${user.email}`
-      : 'Reset link logged to console (email unavailable)',
-  })
+      ? `Password reset link sent to ${email}`
+      : 'Email could not be sent. Use the reset link below.',
+    // Only include resetUrl if email failed
+    resetUrl: emailSent ? undefined : resetUrl,
+  });
 });
 
 export const resetPassword = catchAsync(async (req, res, next) => {
