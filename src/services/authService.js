@@ -24,22 +24,14 @@ export const registerUser = async ({ name, email, password }, req) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) throw new AppError('Email already in use', 400);
 
-  const user = await User.create({ name, email, password });
-  const verificationToken = user.generateVerificationToken();
-  await user.save({ validateBeforeSave: false });
-
-  const verificationURL = `${req.protocol}://${req.get('host')}/api/auth/verify-email/${verificationToken}`;
-
-  await sendEmail({
-    to: user.email,
-    subject: 'Verify your email',
-    html: `<h2>Welcome ${user.name}</h2>
-           <p>Please verify your email by clicking the link below:</p>
-           <a href="${verificationURL}">Verify Email</a>
-           <p>This link expires in 24 hours.</p>`,
+  const user = await User.create({ 
+    name, 
+    email, 
+    password,
+    isVerified: true 
   });
 
-  return { message: 'Registration successful. Please verify your email.' };
+  return { message: 'Registration successful. You can now log in.' };
 };
 
 export const verifyEmail = async (token) => {
