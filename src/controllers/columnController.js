@@ -16,6 +16,26 @@ export const addColumn = catchAsync(async (req, res, next) => {
   const board = await Board.findById(boardId);
   if (!board) return next(new AppError('Board not found', 404));
 
+  const existingColumn = await Column.findOne({
+    board: boardId,
+    name: {
+      $regex: new RegExp(
+        `^${name.trim().replace(
+          /[.*+?^${}()|[\]\\]/g, '\\$&'
+        )}$`,
+        'i'
+      )
+    }
+  })
+
+  if (existingColumn) {
+    return next(new AppError(
+      `A column named "${name.trim()}" ` +
+      `already exists in this board.`,
+      400
+    ))
+  }
+
   const lastColumn = await Column.findOne({ board: boardId })
     .sort({ order: -1 });
   const nextOrder = lastColumn ? lastColumn.order + 1 : 0;

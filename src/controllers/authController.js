@@ -54,32 +54,31 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
 
   // Try sending email
-  let emailSent = false;
+  let emailSent = false
   try {
     await sendPasswordResetEmail({
       toEmail: user.email,
       userName: user.name,
       resetUrl,
-    });
-    emailSent = true;
+    })
+    emailSent = true
   } catch (err) {
-    console.log('[DEV] Email failed:', err.message);
+    console.log('[DEV] Email failed:', err.message)
+    emailSent = false
   }
 
-  // Always log to console as backup
-  console.log('\n[RESET URL]:', resetUrl, '\n');
+  console.log('[RESET URL]:', resetUrl)
 
-  // If email sent -> normal message
-  // If email failed -> return reset link directly in response
+  // Return different response based on email success
   return res.status(200).json({
     status: 'success',
     emailSent,
     message: emailSent
-      ? `Password reset link sent to ${email}`
-      : 'Email could not be sent. Use the reset link below.',
-    // Only include resetUrl if email failed
+      ? `Password reset link sent to ${user.email}`
+      : 'Email delivery failed. Use the link below.',
+    // ONLY include resetUrl when email FAILED
     resetUrl: emailSent ? undefined : resetUrl,
-  });
+  })
 });
 
 export const resetPassword = catchAsync(async (req, res, next) => {
